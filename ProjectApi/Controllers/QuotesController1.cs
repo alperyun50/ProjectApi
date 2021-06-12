@@ -74,6 +74,7 @@ namespace ProjectApi.Controllers
                 entity.Author = quote.Author;
                 entity.Description = quote.Description;
                 entity.Type = quote.Type;
+                entity.CreateAt = quote.CreateAt;
                 _quotesDbContext.SaveChanges();
                 return Ok("Kayıt güncelleme başarılı..");
             }
