@@ -22,13 +22,7 @@ namespace ProjectApi.Controllers
             _quotesDbContext = quotesDbContext;
         }
 
-        // GET: api/<QuotesController1>
-        //[HttpGet]
-        //public IEnumerable<Quote> Get()
-        //{
-        //    return _quotesDbContext.Quotes;
-        //}
-
+        
         // GET: api/<QuotesController1>
         [HttpGet]
         public IActionResult Get()
@@ -37,7 +31,7 @@ namespace ProjectApi.Controllers
         }
 
         // GET api/<QuotesController1>/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "Get")]
         public IActionResult Get(int id)
         {
             var quote = _quotesDbContext.Quotes.Find(id);
@@ -47,6 +41,13 @@ namespace ProjectApi.Controllers
             }
             return Ok(quote);
         }
+
+        //// api/<QuotesController1/Test/1
+        //[HttpGet("[action]/{id}")]
+        //public int Test(int id)
+        //{
+        //    return id;
+        //}
 
         // POST api/<QuotesController1>
         [HttpPost]
