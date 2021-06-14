@@ -25,9 +25,23 @@ namespace ProjectApi.Controllers
         
         // GET: api/<QuotesController1>
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get(string sort)
         {
-            return Ok(_quotesDbContext.Quotes);
+            // more efficient for sorting according to IEnumerable<>
+            IQueryable<Quote> quotes;
+            switch(sort)
+            {
+                case "desc":
+                    quotes = _quotesDbContext.Quotes.OrderByDescending(q => q.CreateAt);
+                    break;
+                case "asc":
+                    quotes = _quotesDbContext.Quotes.OrderBy(q => q.CreateAt);
+                    break;
+                default:
+                    quotes = _quotesDbContext.Quotes;
+                    break;
+            }
+            return Ok(quotes);
         }
 
         // GET api/<QuotesController1>/5
