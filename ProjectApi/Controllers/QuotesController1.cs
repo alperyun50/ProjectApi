@@ -25,6 +25,7 @@ namespace ProjectApi.Controllers
         
         // GET: api/<QuotesController1>
         [HttpGet]
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client)]  // caching for 60 second in clientside
         public IActionResult Get(string sort)
         {
             // more efficient for sorting according to IEnumerable<>
@@ -56,6 +57,14 @@ namespace ProjectApi.Controllers
             var currentPageSize = pageSize ?? 5;
 
             return Ok(quotes.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize));
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        public IActionResult SearchQuote(string type)
+        {
+            var quotes = _quotesDbContext.Quotes.Where(q => q.Type.StartsWith(type));
+            return Ok(quotes);
         }
 
         // GET api/<QuotesController1>/5

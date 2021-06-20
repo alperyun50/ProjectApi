@@ -30,6 +30,7 @@ namespace ProjectApi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<QuotesDbContext>(option => option.UseSqlServer(@"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = QuotesDb;"));
             services.AddMvc().AddXmlSerializerFormatters();
+            services.AddResponseCaching();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +51,7 @@ namespace ProjectApi
             // apply migrations at runtime
             // quotesDbContext.Database.Migrate();
 
+            app.UseResponseCaching();
             app.UseMvc();
         }
     }
