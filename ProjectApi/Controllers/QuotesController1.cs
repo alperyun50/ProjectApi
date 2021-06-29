@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectApi.Data;
 using ProjectApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -13,6 +15,7 @@ namespace ProjectApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class QuotesController1 : ControllerBase
     {
         private QuotesDbContext _quotesDbContext;
@@ -67,6 +70,14 @@ namespace ProjectApi.Controllers
             return Ok(quotes);
         }
 
+        [HttpGet("[action]")]
+        public IActionResult MyQuote()
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var quotes = _quotesDbContext.Quotes.Where(q=>q.UserId==userId);
+            return Ok(quotes);
+        }
+
         // GET api/<QuotesController1>/5
         [HttpGet("{id}", Name = "Get")]
         public IActionResult Get(int id)
@@ -90,6 +101,8 @@ namespace ProjectApi.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Quote quote)
         {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            quote.UserId = userId;
             _quotesDbContext.Quotes.Add(quote);
             _quotesDbContext.SaveChanges();
             // Http status code
@@ -100,12 +113,20 @@ namespace ProjectApi.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Quote quote)
         {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            
             var entity = _quotesDbContext.Quotes.Find(id);
             // if id couldnt found
             if(entity == null)
             {
                 return NotFound("Bu id ile kayıt bulunamadı!..");
             }
+            
+            if(userId != entity.UserId)
+            {
+                return BadRequest("Kayıt güncelleyemedin moruk!..");
+            }
+            
             else
             {
                 entity.Title = quote.Title;
@@ -123,11 +144,19 @@ namespace ProjectApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
             var quote = _quotesDbContext.Quotes.Find(id);
             if(quote == null)
             {
                 return NotFound("Bu id ile kayıt bulunamadı!..");
             }
+
+            if(userId != quote.UserId)
+            {
+                return BadRequest("Kayıt silemezsin hafz!..");
+            }
+
             else
             {
                 _quotesDbContext.Quotes.Remove(quote);

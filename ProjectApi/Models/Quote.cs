@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -22,5 +23,8 @@ namespace ProjectApi.Models
         public string Type { get; set; }
         [Required]
         public DateTime CreateAt { get; set; }
+
+        [JsonIgnore]
+        public string UserId { get; set; }
     }
 }
